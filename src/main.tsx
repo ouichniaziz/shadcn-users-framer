@@ -19,7 +19,7 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <SWRConfig value={{ revalidateOnFocus: true }}>
+    <SWRConfig value={{ revalidateOnFocus: false }}>
       <RouterProvider router={router} />
     </SWRConfig>
   </React.StrictMode>

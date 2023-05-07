@@ -1,3 +1,4 @@
+import useSWRMutation from "swr/mutation";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
 import {
@@ -12,32 +13,27 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { SelectInput } from "./SelectInput";
+import { Loader2 } from "lucide-react";
+import { delay } from "../lib/utils";
 
 export function DialogAdd() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
 
-  // const mutation = useMutation({
-  //   mutationFn: createUser,
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(["users"]);
-  //     setOpen(false);
-  //   },
-  // });
-
   async function createUser() {
+    await delay(2000);
     const res = await fetch(`http://localhost:3000/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: 6,
+        id: 5,
         name,
         email,
         pictureUrl:
-          "https://this-person-does-not-exist.com/img/avatar-11a44e0774085bf583cd986da16f1bd3.jpg",
+          "https://ph-files.imgix.net/c495260b-6e2b-4987-b44e-a669dce024c6.png?auto=format&fit=crop",
         role: "admin",
         isDeleted: false,
       }),
@@ -45,17 +41,30 @@ export function DialogAdd() {
     return res.json();
   }
 
-  const handleSetName = (event: any) => {
+  const { trigger, isMutating } = useSWRMutation(
+    "http://localhost:3000/users",
+    createUser
+  );
+
+  const handleSetName = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
 
-  const handleSetEmail = (event: any) => {
+  const handleSetEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
 
-  const onSubmit = (event: any) => {
+  const onSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // mutation.mutate();
+    try {
+      await trigger();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setOpen(false);
+      setName("");
+      setEmail("");
+    }
   };
 
   return (
@@ -102,7 +111,13 @@ export function DialogAdd() {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Create</Button>
+            <Button type="submit">
+              {isMutating ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+              ) : (
+                "Create"
+              )}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

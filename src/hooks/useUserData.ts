@@ -1,4 +1,4 @@
-import { delay } from "../lib/utils";
+import useSWR, { Fetcher } from "swr";
 
 type User = {
   id: number;
@@ -10,13 +10,17 @@ type User = {
 };
 
 export const useUserData = (userId: string) => {
-  // const userQuery = useQuery({
-  //   queryKey: ["users", userId],
-  //   queryFn: async (): Promise<User> => {
-  //     const res = await fetch(`http://localhost:3000/users/${userId}`);
-  //     await delay(1000);
-  //     return res.json();
-  //   },
-  // });
-  return {};
+  const fetcher: Fetcher<User> = async (url: string) => {
+    return fetch(url).then((res) => res.json());
+  };
+  const { data, error, isLoading, isValidating } = useSWR(
+    `http://localhost:3000/users/${userId}`,
+    fetcher
+  );
+  return {
+    user: data,
+    isLoading,
+    isError: error,
+    isValidating,
+  };
 };

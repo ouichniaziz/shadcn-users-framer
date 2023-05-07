@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import useSWR, { Fetcher } from "swr";
 import { delay } from "../lib/utils";
 
 type User = {
@@ -11,13 +11,18 @@ type User = {
 };
 
 export const useUsersData = () => {
-  const usersQuery = useQuery({
-    queryKey: ["users"],
-    queryFn: async (): Promise<User[]> => {
-      const res = await fetch("http://localhost:3000/users");
-      await delay(1000);
-      return res.json();
-    },
-  });
-  return usersQuery;
+  const fetcher: Fetcher<User[]> = async (url: string) => {
+    await delay(3000);
+    return fetch(url).then((res) => res.json());
+  };
+  const { data, error, isLoading, isValidating } = useSWR(
+    "http://localhost:3000/users",
+    fetcher
+  );
+  return {
+    users: data,
+    isLoading,
+    isError: error,
+    isValidating,
+  };
 };

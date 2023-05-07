@@ -1,4 +1,3 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Button } from "../components/ui/button";
 import {
@@ -18,15 +17,14 @@ export function DialogAdd() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["users"]);
-      setOpen(false);
-    },
-  });
+  // const mutation = useMutation({
+  //   mutationFn: createUser,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries(["users"]);
+  //     setOpen(false);
+  //   },
+  // });
 
   async function createUser() {
     const res = await fetch(`http://localhost:3000/users`, {
@@ -57,7 +55,7 @@ export function DialogAdd() {
 
   const onSubmit = (event: any) => {
     event.preventDefault();
-    mutation.mutate();
+    // mutation.mutate();
   };
 
   return (

@@ -4,7 +4,8 @@ import { useUsersData } from "../hooks/useUsersData";
 import UserInfo from "./UserInfo";
 
 const UsersList = () => {
-  const queryUsers = useUsersData();
+  const { isLoading, users, isValidating } = useUsersData();
+
   return (
     <>
       <h1
@@ -19,15 +20,16 @@ const UsersList = () => {
       <div
         className={clsx(
           "w-[760px] bg-customgray border-[0.5px] min-h-[50%] border-slate-500/[.3] rounded divide-y divide-slate-500/[.3]",
-          queryUsers.isLoading && "flex justify-center items-center"
+          isLoading && "flex justify-center items-center"
         )}
       >
-        {queryUsers.isLoading ? (
+        {isLoading ? (
           <Loader2 className="h-12 w-12 animate-spin" />
         ) : (
-          queryUsers?.data?.map((user) => <UserInfo key={user.id} {...user} />)
+          users?.map((user) => <UserInfo key={user.id} {...user} />)
         )}
       </div>
+      <h3>{isValidating ? "Revalidate" : null}</h3>
     </>
   );
 };
